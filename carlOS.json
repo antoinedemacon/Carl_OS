@@ -1,0 +1,29 @@
+// Lien vers qu'est-ce que le JSON et comment l'écrire ↓
+// https://www.alsacreations.com/article/lire/1675-json-stockage-leger-pratique-donnees-multitypes.html
+
+{
+	"carlOS" : [ 
+		{
+			// Exemple de déclencheur
+			"declencheur" : "Hello",
+			// Exemple d'action classique avec une seule réponse 
+			"action" : "Coucou"
+		},
+		{
+			// Exemple de déclencheur
+			"declencheur" : "ça va être à vous de les trouver",
+			// Exemple d'action classique avec une seule réponse 
+			"action" : "Coucou"
+		},
+		{
+			"declencheur" : "ça va",
+			// Exemple d'action avec plusieurs réponses possible
+			"action" : [ "bien et toi", "ça roule ma poule", "bien bien !" ]
+		},
+		{
+			"declencheur" : "fonction",
+			// Exemple d'action qui lance une fonction nommée test (ici pour l'exemple)
+			"action" : "() test"
+		}
+	]
+}

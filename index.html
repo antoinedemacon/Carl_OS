@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" lang="fr">
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <style type="text/css">
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: black;
+        }
+        h1#text {
+            font-family: monospace;
+            color: rgb(0, 255, 0);
+            width: 500px;
+            padding: 20px 0;
+            font-weight: 100;
+            line-height: 1.4;
+            font-size: 100%;
+        }
+        p {
+            margin: 0;
+        }
+        p:before {
+            content: '_ ';
+        }
+    </style>
+</head>
+<body>
+    <h1 id="text"></h1>
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+            $.ajax({
+              url: 'carlOS.json',
+              dataType: 'json',
+              complete: function(res){
+                detect(res);
+                }
+            });
+        });
+
+        function textFormat(text) {
+            text = text.replace(/\s/g, '');
+            text = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            text = text.toUpperCase();
+
+            return text;
+        }
+
+        function testFunction(text) {
+            if(text.indexOf("()") != -1) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        function functionFormat(text) {
+            text = text.replace('() ', '');
+
+            return text;
+        }
+
+        function detect(res) {
+            if ("WebSocket" in window) {
+
+
+                var ws = new WebSocket("ws://localhost:1337/p5websocket");
+            } else {
+
+
+                alert("WebSocket NOT supported by your Browser!");
+            }
+
+            var recognition = new webkitSpeechRecognition();
+
+            recognition.continuous = true;
+            recognition.lang = "fr-FR";
+
+            var json = res.responseJSON.carlOS; 
+            console.log(json.length);
+
+            recognition.onresult = function(event) {
+
+                var transcript = event.results[event.results.length-1][0].transcript;
+
+                ws.send(transcript);
+
+                for(var i = 0; i < json.length; i++) {
+                    if(textFormat(json[i].declencheur) == textFormat(transcript)) {
+                        if(Array.isArray(json[i].action)) {
+                            document.getElementById('text').innerHTML = json[i].action[Math.floor(Math.random() * json[i].action.length)];
+                        } else if(testFunction(json[i].action)) {
+                            console.log(functionFormat(json[i].action));
+                        } else {
+                            document.getElementById('text').innerHTML = json[i].action;
+                        }
+                    }
+                }
+
+                // document.getElementById('text').innerHTML += transcript + '<br/>';
+                window.scrollTo(0,document.body.scrollHeight);
+            }
+
+            recognition.start();
+
+            recognition.onend = function(){
+                recognition.start();
+            }
+        }
+
+    </script>
+</body>
+</html>
